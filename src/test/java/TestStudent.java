@@ -30,14 +30,20 @@ public class TestStudent {
 
     //register for class that doesnt exist or overcapacity
     @Test
-    public void test_registerForClass() {
+    public void test_registerForClass_default() {
         this.student.registerForClass("Student1", "TestA", 2017);
         assertTrue(this.student.isRegisteredFor("Student1", "TestA", 2017));
+    }
 
+    @Test
+    public void test_registerForClass_classDNE() {
         //register for a class that doesnt exist
         this.student.registerForClass("Student1", "TestB", 2017);
         assertFalse(this.student.isRegisteredFor("Student1", "TestB", 2017));
+    }
 
+    @Test
+    public void test_registerForClass_overCapacity() {
         //overcapacity class
         this.student.registerForClass("Student1", "SmallClass", 2017);
         this.student.registerForClass("Student2", "SmallClass", 2017);
@@ -55,26 +61,44 @@ public class TestStudent {
 
     //check submit homework
     @Test
-    public void test_submitHomework() {
+    public void test_submitHomework_default() {
         this.student.registerForClass("Student1", "TestA", 2017);
         this.instructor.addHomework("Instructor", "TestA", 2017, "Hw1", "Make Hello World");
         this.student.submitHomework("Student1", "Hw1", "answers", "TestA", 2017);
         assertTrue(this.student.hasSubmitted("Student1", "Hw1", "TestA", 2017));
+    }
 
+    @Test
+    public void test_submitHomework_DNE() {
         //submit for hw that does not exist
+        this.student.registerForClass("Student1", "TestA", 2017);
         this.student.submitHomework("Student1", "Hw2", "answers", "TestA", 2017);
         assertFalse(this.student.hasSubmitted("Student1", "Hw2", "TestA", 2017));
+    }
 
+    @Test
+    public void test_submitHomework_classDNE() {
         //submit for class that does not exist
+        this.student.registerForClass("Student1", "TestB", 2017);
+        this.instructor.addHomework("Instructor", "TestB", 2017, "Hw1", "Make Hello World");
         this.student.submitHomework("Student1", "Hw1", "answers", "TestB", 2017);
         assertFalse(this.student.hasSubmitted("Student1", "Hw1", "TestB", 2017));
+    }
 
+    @Test
+    public void test_submitHomework_studentNotRegistered() {
         //submit when student is not registered
+        this.instructor.addHomework("Instructor", "TestA", 2017, "Hw1", "Make Hello World");
         this.student.submitHomework("Student2", "Hw1", "answers", "TestA", 2017);
         assertFalse(this.student.hasSubmitted("Student2", "Hw1", "TestA", 2017));
+    }
 
+    @Test
+    public void test_submitHomework_pastYear() {
         //submit for class in past year
+        this.student.registerForClass("Student1", "TestA", 2016);
+        this.instructor.addHomework("Instructor", "TestA", 2016, "Hw1", "Make Hello World");
         this.student.submitHomework("Student1", "Hw1", "answers", "TestA", 2016);
-        assertTrue(this.student.hasSubmitted("Student1", "Hw1", "TestA", 2016));
+        assertFalse(this.student.hasSubmitted("Student1", "Hw1", "TestA", 2016));
     }
 }
